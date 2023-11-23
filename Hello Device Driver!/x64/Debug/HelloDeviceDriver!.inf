@@ -1,0 +1,80 @@
+;
+; HelloDeviceDriver!.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=System ; TODO: specify appropriate Class
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=HelloDeviceDriver!.cat
+DriverVer = 11/22/2023,16.52.57.375
+PnpLockdown=1
+
+[DestinationDirs]
+DefaultDestDir = 12
+HelloDeviceDriver!_Device_CoInstaller_CopyFiles = 11
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+HelloDeviceDriver!.sys  = 1,,
+;
+
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTamd64
+
+[Standard.NTamd64]
+%HelloDeviceDriver!.DeviceDesc%=HelloDeviceDriver!_Device, Root\HelloDeviceDriver! ; TODO: edit hw-id
+
+[HelloDeviceDriver!_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+HelloDeviceDriver!.sys
+
+;-------------- Service installation
+[HelloDeviceDriver!_Device.NT.Services]
+AddService = HelloDeviceDriver!,%SPSVCINST_ASSOCSERVICE%, HelloDeviceDriver!_Service_Inst
+
+; -------------- HelloDeviceDriver! driver install sections
+[HelloDeviceDriver!_Service_Inst]
+DisplayName    = %HelloDeviceDriver!.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\HelloDeviceDriver!.sys
+
+;
+;--- HelloDeviceDriver!_Device Coinstaller installation ------
+;
+
+[HelloDeviceDriver!_Device.NT.CoInstallers]
+AddReg=HelloDeviceDriver!_Device_CoInstaller_AddReg
+CopyFiles=HelloDeviceDriver!_Device_CoInstaller_CopyFiles
+
+[HelloDeviceDriver!_Device_CoInstaller_AddReg]
+;
+
+
+[HelloDeviceDriver!_Device_CoInstaller_CopyFiles]
+;
+
+
+[HelloDeviceDriver!_Device.NT.Wdf]
+KmdfService =  HelloDeviceDriver!, HelloDeviceDriver!_wdfsect
+[HelloDeviceDriver!_wdfsect]
+KmdfLibraryVersion = 1.15
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "HelloDeviceDriver! Installation Disk"
+HelloDeviceDriver!.DeviceDesc = "HelloDeviceDriver! Device"
+HelloDeviceDriver!.SVCDESC = "HelloDeviceDriver! Service"
